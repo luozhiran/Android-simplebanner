@@ -1,16 +1,19 @@
 package com.luo.simplebanner;
 
 import android.content.Context;
+import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.luo.simplebanner.controller.SBViewpagerScroller;
 import com.luo.simplebanner.interfaces.Holder;
 import com.luo.simplebanner.pageradapter.SBPageAdapter;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -20,6 +23,7 @@ import java.util.List;
 public class SBContainLayout extends LinearLayout {
     private SBPageAdapter sbPageAdapter;
     private boolean canLoop;
+    private boolean isTurning;
     private SwitchRunnable switchRunnable;
     private static  int LOOP_TIME;
     /**
@@ -52,8 +56,23 @@ public class SBContainLayout extends LinearLayout {
         viewpagerContainer = (RelativeLayout) view.findViewById(R.id.viewpagerContainer);
         viewPager = (SBViewpager) view.findViewById(R.id.viewpager);
         indicatorContainer = (LinearLayout) view.findViewById(R.id.indicatorContainer);
-//        switchRunnable = new SwitchRunnable();
+        initViewPagerScroller();
     }
+
+    private void initViewPagerScroller(){
+        SBViewpagerScroller scroller = new SBViewpagerScroller(getContext());
+        try {
+            Field fieldScroller = ViewPager.class.getDeclaredField("mScroller");
+            fieldScroller.setAccessible(true);
+            fieldScroller.set(viewPager,scroller);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     public void setPager(Holder holder,List data){
         sbPageAdapter = new SBPageAdapter(data,holder);
@@ -71,13 +90,14 @@ public class SBContainLayout extends LinearLayout {
 
 
     public void startLoop(int delayTime){
+        isTurning = true;
         LOOP_TIME=delayTime;
         postDelayed(switchRunnable,delayTime);
     }
 
     public void stopLoop(){
-        canLoop = false;
-        removeCallbacks(switchRunnable);
+            isTurning = false;
+            removeCallbacks(switchRunnable);
     }
 
 
@@ -88,7 +108,7 @@ public class SBContainLayout extends LinearLayout {
         }
         @Override
         public void run() {
-            if (reference.get().canLoop) {
+            if (reference.get()!=null&&reference.get().isTurning) {
                 if (reference != null && reference.get() != null && reference.get().viewPager != null) {
                     reference.get().viewPager.setCurrentItem(reference.get().viewPager.getCurrentItem() + 1);
                     reference.get().postDelayed(reference.get().switchRunnable, LOOP_TIME);

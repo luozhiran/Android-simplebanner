@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.luo.simplebanner.SBViewpager;
+import com.luo.simplebanner.controller.ObserveScrollState;
 import com.luo.simplebanner.interfaces.Holder;
 
 import java.util.List;
@@ -14,12 +15,11 @@ import java.util.List;
  */
 
 public class SBPageAdapter extends PagerAdapter {
+    public static final int MULTIPLE_COUNT = 300;
     private List data;
     private Holder holder;
-    private boolean canLoop;
-    private SBViewpager viewPager;
-
-    private static final int MULTIPLE_COUNT = 300;
+    private boolean isCanloop;
+    private ObserveScrollState observeScrollState;
     public SBPageAdapter(List data,Holder holder) {
         this.data = data;
         this.holder = holder;
@@ -27,7 +27,7 @@ public class SBPageAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return canLoop?MULTIPLE_COUNT*getRealCount():getRealCount();
+        return isCanloop?MULTIPLE_COUNT*getRealCount():getRealCount();
     }
 
     @Override
@@ -53,21 +53,11 @@ public class SBPageAdapter extends PagerAdapter {
 
     @Override
     public void finishUpdate(ViewGroup container) {
-        int currentPositiion = viewPager.getCurrentItem();
-        if (currentPositiion == 0 ){
-           viewPager.setCurrentItem(getFirstItem(),false);
-        }else if (currentPositiion==MULTIPLE_COUNT*data.size()-1){
-           viewPager.setCurrentItem(getLastItem(),false);
+        if (observeScrollState!=null){
+            observeScrollState.finishUpdate();
         }
     }
 
-    private int getFirstItem(){
-        return canLoop?data.size():0;
-    }
-
-    private int getLastItem(){
-        return data.size()-1;
-    }
 
     private int toRealPosition(int position){
         if (getRealCount()==0){
@@ -77,18 +67,32 @@ public class SBPageAdapter extends PagerAdapter {
 
     }
 
-    public void setCanLoop(boolean canLoop) {
-        this.canLoop = canLoop;
-    }
-
-    private int getRealCount(){
+    public int getRealCount(){
         if (data!=null){
             return data.size();
         }
         return 0;
     }
 
-    public void setViewPager(SBViewpager viewPager) {
-        this.viewPager = viewPager;
+
+    public void setObserveScrollState(ObserveScrollState observeScrollState) {
+        this.observeScrollState = observeScrollState;
+    }
+
+
+    public int getFirstItem(){
+        return isCanloop?getRealCount():0;
+    }
+
+    public int getLastItem(){
+        return getRealCount()-1;
+    }
+
+    public boolean isCanloop() {
+        return isCanloop;
+    }
+
+    public void setCanloop(boolean canloop) {
+        isCanloop = canloop;
     }
 }

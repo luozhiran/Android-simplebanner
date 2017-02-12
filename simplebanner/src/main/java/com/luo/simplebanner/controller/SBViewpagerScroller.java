@@ -9,7 +9,7 @@ import android.widget.Scroller;
  */
 
 public class SBViewpagerScroller extends Scroller {
-    private
+    private int scrollTime = 800;
     public SBViewpagerScroller(Context context) {
         super(context);
     }
@@ -19,12 +19,15 @@ public class SBViewpagerScroller extends Scroller {
     }
 
     @Override
-    public void startScroll(int startX, int startY, int dx, int dy) {
-        super.startScroll(startX, startY, dx, dy);
+    public void startScroll(int startX, int startY, int dx, int dy, int duration) {
+        super.startScroll(startX, startY, dx, dy, scrollTime);
     }
 
-    @Override
-    public void startScroll(int startX, int startY, int dx, int dy, int duration) {
-        super.startScroll(startX, startY, dx, dy, duration);
+    public int getScrollTime() {
+        return scrollTime;
+    }
+
+    public void setScrollTime(int scrollTime) {
+        this.scrollTime = scrollTime;
     }
 }

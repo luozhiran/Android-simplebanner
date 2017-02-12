@@ -4,8 +4,8 @@ import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.view.View;
 
+import com.luo.simplebanner.controller.ObserveScrollState;
 import com.luo.simplebanner.pageradapter.SBPageAdapter;
 
 /**
@@ -13,6 +13,19 @@ import com.luo.simplebanner.pageradapter.SBPageAdapter;
  */
 
 public class SBViewpager extends ViewPager {
+
+    private SBPageAdapter sbPageAdapter;
+    private ObserveScrollState observeScrollState = new ObserveScrollState() {
+        @Override
+        public void finishUpdate() {
+            int currentPositiion = getCurrentItem();
+            if (currentPositiion == 0 ){
+                setCurrentItem(sbPageAdapter.getFirstItem(),false);
+            }else if (currentPositiion==SBPageAdapter.MULTIPLE_COUNT*sbPageAdapter.getRealCount()-1){
+                setCurrentItem(sbPageAdapter.getLastItem(),false);
+            }
+        }
+    };
 
 
     public SBViewpager(Context context) {
@@ -29,9 +42,15 @@ public class SBViewpager extends ViewPager {
     }
 
     public void setAdapter(SBPageAdapter adapter, boolean canloop) {
-        adapter.setViewPager(this);
-        adapter.setCanLoop(canloop);
-        super.setAdapter(adapter);
+        sbPageAdapter = adapter;
+        sbPageAdapter.setObserveScrollState(observeScrollState);
+        sbPageAdapter.setCanloop(canloop);
+        super.setAdapter(sbPageAdapter);
 
     }
+
+    public SBPageAdapter getAdapter() {
+        return sbPageAdapter;
+    }
+
 }
