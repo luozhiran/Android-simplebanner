@@ -5,4 +5,5 @@ package com.luo.simplebanner.listener;
  */
 
 public interface OnitemClickListener {
+    public void onItemClick(int position);
 }

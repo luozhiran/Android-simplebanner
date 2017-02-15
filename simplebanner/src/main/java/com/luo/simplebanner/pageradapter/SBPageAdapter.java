@@ -59,7 +59,7 @@ public class SBPageAdapter extends PagerAdapter {
     }
 
 
-    private int toRealPosition(int position){
+    public int toRealPosition(int position){
         if (getRealCount()==0){
             return 0;
         }

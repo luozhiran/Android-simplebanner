@@ -2,8 +2,14 @@ package com.luo.android.simplebanner;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.luo.simplebanner.SBContainLayout;
+import com.luo.simplebanner.TimerUtils;
+import com.luo.simplebanner.defaultview.PointIndicateView;
+import com.luo.simplebanner.interfaces.Indicate;
+import com.luo.simplebanner.listener.OnitemClickListener;
 
 import java.util.Arrays;
 
@@ -27,7 +33,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         sbContainLayout = (SBContainLayout) findViewById(R.id.sb);
         sbContainLayout.setCanLoop(true);
-        sbContainLayout.setPager(new BannerView(), Arrays.asList(images));
+        Indicate indicate = new PointIndicateView();
+        sbContainLayout.setPager(new BannerView(), Arrays.asList(images))
+                .setIndicator(indicate);
+        sbContainLayout.setOnitemClickListener(new OnitemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Toast.makeText(MainActivity.this,"ddd"+position,Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
     }
 
